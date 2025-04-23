@@ -22,6 +22,10 @@ enum Cartridges: CaseIterable {
 
 struct Cartridge: View {    
     private let imageName: String
+    private let screenSize: CGSize
+    private let originX: CGFloat
+    private let originY: CGFloat
+    private let idCartridge: Cartridges
     
     @State var offset: CGSize = .zero
     @State var accumulated: CGSize = .zero
@@ -29,8 +33,14 @@ struct Cartridge: View {
     @State var width: CGFloat = 100
     @State var height: CGFloat = 50
     
-    init(idCartridge: Cartridges, width: CGFloat = 100, height: CGFloat = 50) {
-        self.imageName = switch idCartridge {
+    init(idCartridge: Cartridges, width: CGFloat = 100, height: CGFloat = 50, screenSize: CGSize, originX: CGFloat, originY: CGFloat) {
+        self.width = width
+        self.height = height
+        self.screenSize = screenSize
+        self.originX = originX
+        self.originY = originY
+        self.idCartridge = idCartridge
+        self.imageName = switch self.idCartridge {
         case .planescape:
             "planescape"
         case .skyrim:
@@ -64,13 +74,15 @@ struct Cartridge: View {
             .animation(.spring())
             .gesture(DragGesture()
                 .onChanged { value in
-                    offset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
+                    let newOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
+                    offset = CGSize(width: limitX(newOffset.width), height: limitY(newOffset.height))
                     isDragging = true
                 }
                 .onEnded({ value in
                     withAnimation {
-                        offset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
-                        accumulated = offset
+                        let finalOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
+                        accumulated = CGSize(width: limitX(finalOffset.width), height: limitY(finalOffset.height))
+                        offset = accumulated
                         isDragging = false
                     }
                 })
@@ -85,8 +97,21 @@ struct Cartridge: View {
                 }
             }
     }
+    private func limitX(_ x: CGFloat) -> CGFloat {
+        let screenWidth = screenSize.width
+        let maxX = screenWidth - originX - (width / 2)
+        let minX = -originX + width / 2
+        return max(minX, min(maxX, x))
+    }
+    
+    private func limitY(_ y: CGFloat) -> CGFloat {
+        let screenHeight = screenSize.height
+        let maxY = screenHeight - originY
+        let minY = -originY + height / 2
+        return max(minY, min(maxY, y))
+    }
 }
 
 #Preview {
-    Cartridge(idCartridge: .ttt)
+    Cartridge(idCartridge: .ttt, screenSize: CGSize(width: 393, height: 759), originX: 0, originY: 0).position(x: 0, y: 0)
 }

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var scaled: Bool = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -23,8 +25,15 @@ struct ContentView: View {
                         Shelf()
                     } label: {
                         Image("TTT")
-                            .imageScale(.large)
+                            .resizable()
+                            .scaledToFit()
                             .foregroundStyle(.tint)
+                            .scaleEffect(scaled ? 1.2 : 1.0)
+                            .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true), value: scaled)
+                            .onAppear {
+                                scaled.toggle()
+                            }
+                            .frame(width: 300, height: 100)
                     }
                     .accessibilityHint(Text("Go to the next screen."))
                     
