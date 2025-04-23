@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-enum Cartridges: CaseIterable {
+enum Cartridges: String, CaseIterable  {
     case planescape
     case skyrim
     case dragonAge
@@ -27,43 +27,35 @@ struct Cartridge: View {
     private let originY: CGFloat
     private let idCartridge: Cartridges
     
+    //Posição da area de colisão da tela
+    let xDestination: CGFloat
+    let yDestination: CGFloat
+    
+    //Tamanho da área de colisão
+    let colissionAreaWidth: CGFloat = 100
+    let colissionAreaHeight: CGFloat = 50
+    
+    //Flag de colisão
+    @State var isCollided = false
+    
+    
+    //Variáveis de Drag
     @State var offset: CGSize = .zero
     @State var accumulated: CGSize = .zero
     @State var isDragging = false
     @State var width: CGFloat = 100
     @State var height: CGFloat = 50
     
-    init(idCartridge: Cartridges, width: CGFloat = 100, height: CGFloat = 50, screenSize: CGSize, originX: CGFloat, originY: CGFloat) {
+    init(idCartridge: Cartridges, width: CGFloat = 100, height: CGFloat = 50, screenSize: CGSize, originX: CGFloat, originY: CGFloat, xDestination: CGFloat, yDestination: CGFloat) {
         self.width = width
         self.height = height
         self.screenSize = screenSize
         self.originX = originX
         self.originY = originY
+        self.xDestination = xDestination
+        self.yDestination = yDestination
         self.idCartridge = idCartridge
-        self.imageName = switch self.idCartridge {
-        case .planescape:
-            "planescape"
-        case .skyrim:
-            "skyrim"
-        case .dragonAge:
-            "dragonAge"
-        case .divinity:
-            "divinity"
-        case .baldursGate:
-            "baldursGate"
-        case .pillarsOfEternity:
-            "pillarsOfEternity"
-        case .underrail:
-            "underrail"
-        case .witcher:
-            "witcher"
-        case .darkSouls:
-            "darkSouls"
-        case .cyberpunk:
-            "cyberpunk"
-        case .ttt:
-            "TTT"
-        }
+        self.imageName = self.idCartridge.rawValue
     }
     
     var body: some View {
@@ -74,16 +66,21 @@ struct Cartridge: View {
             .animation(.spring())
             .gesture(DragGesture()
                 .onChanged { value in
-                    let newOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
-                    offset = CGSize(width: limitX(newOffset.width), height: limitY(newOffset.height))
-                    isDragging = true
+                    if !isCollided {
+                        let newOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
+                        offset = CGSize(width: limitX(newOffset.width), height: limitY(newOffset.height))
+                        isDragging = true
+                        checkCollision()
+                    }
                 }
                 .onEnded({ value in
                     withAnimation {
-                        let finalOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
-                        accumulated = CGSize(width: limitX(finalOffset.width), height: limitY(finalOffset.height))
-                        offset = accumulated
-                        isDragging = false
+                        if !isCollided {
+                            let finalOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
+                            accumulated = CGSize(width: limitX(finalOffset.width), height: limitY(finalOffset.height))
+                            offset = accumulated
+                            isDragging = false
+                        }
                     }
                 })
             )
@@ -94,6 +91,10 @@ struct Cartridge: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     width -= 10
                     height -= 5
+                }
+                
+                if isCollided {
+                    
                 }
             }
     }
@@ -110,8 +111,20 @@ struct Cartridge: View {
         let minY = -originY + height / 2
         return max(minY, min(maxY, y))
     }
+    
+    private func checkCollision() {
+        if abs(xDestination - offset.width - originX) < colissionAreaWidth && abs(yDestination - offset.height - originY) < colissionAreaHeight {
+                
+            offset.width = xDestination - originX
+            offset.height = yDestination - originY
+            
+            isCollided = true
+        } else {
+            isCollided = false
+        }
+    }
 }
 
 #Preview {
-    Cartridge(idCartridge: .ttt, screenSize: CGSize(width: 393, height: 759), originX: 0, originY: 0).position(x: 0, y: 0)
+    Cartridge(idCartridge: .ttt, screenSize: CGSize(width: 393, height: 759), originX: 0, originY: 0, xDestination: 100, yDestination: 200).position(x: 0, y: 0)
 }

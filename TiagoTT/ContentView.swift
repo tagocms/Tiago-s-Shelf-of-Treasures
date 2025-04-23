@@ -39,10 +39,6 @@ struct ContentView: View {
                     
                 }
                 .padding()
-                
-                VStack {
-                    
-                }
             }
         }
     }

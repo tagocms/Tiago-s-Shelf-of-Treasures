@@ -9,7 +9,27 @@ import SwiftUI
 
 struct Shelf: View {
     
+    //Variável que somente ficará disponível após o jogador ter colocado pelo menos uma
+    //fita no lugar
+    @State private var showEndingLink = false
+    @State private var cartridgesPlaced = 0
+    
+    @State private var scaledButton: Bool = false
+    @State private var scaledText: Bool = false
+    
     private(set) static var cartridges = Cartridges.allCases
+    private let destinations: [(width: CGFloat, height: CGFloat)] = [
+        (80, 220),
+        (195, 220),
+        (310, 220),
+        (80, 300),
+        (195, 300),
+        (310, 300),
+        (80, 385),
+        (195, 385),
+        (310, 385),
+        (80, 465),
+    ]
 
     var body: some View {
         GeometryReader { g in
@@ -34,6 +54,7 @@ struct Shelf: View {
                         
                         Image("plant")
                             .position(x: 320, y: 580)
+                            .shadow(radius: 10)
                         
                     }
                     
@@ -41,8 +62,42 @@ struct Shelf: View {
                     ForEach(0..<Shelf.cartridges.count - 1, id: \.self) { i in
                         let x = limitedX()
                         let y = limitedY()
-                        Cartridge(idCartridge: Shelf.cartridges[i], screenSize: g.size, originX: x, originY: y)
+                        Cartridge(idCartridge: Shelf.cartridges[i], screenSize: g.size, originX: x, originY: y, xDestination: destinations[i].width, yDestination: destinations[i].height)
                             .position(x: x, y: y)
+                    }
+                    
+                    // Condicional para mostrar o NavigationLink
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            NavigationLink {
+                                Ending()
+                            } label: {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(.background) // Tornar transparente quando não estiver ativo
+                                        .frame(width: 100, height: 50) // Definir tamanho zero inicialmente
+                                        .scaleEffect(scaledButton ? 1.1 : 1.0)
+                                        .opacity(showEndingLink ? 1 : 0)
+                                        .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true), value: scaledButton)
+                                        .onAppear {
+                                                scaledButton.toggle()
+                                        }
+                                    Text("Go to Ending")
+                                        .font(.geoRegular(20))
+                                        .foregroundColor(.black)
+                                        .scaleEffect(scaledText ? 1.1 : 1.0)
+                                        .animation(Animation.easeInOut(duration: 1).repeatForever(autoreverses: true), value: scaledText)
+                                        .opacity(showEndingLink ? 1 : 0) // Tornar o texto invisível inicialmente
+                                        .onAppear {
+                                                scaledText.toggle()
+                                        }
+                                }
+                            }
+                            .disabled(!showEndingLink) // Desabilitar o link até showEndingLink ser true
+                        }
+                        .padding()
                     }
                 }
             }
