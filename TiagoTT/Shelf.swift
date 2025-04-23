@@ -21,7 +21,7 @@ struct Shelf: View {
                 
                 
                 
-                VStack(alignment: .leading, spacing: -660) {
+                VStack(alignment: .leading, spacing: -610) {
                     Image("tiagoface")
                         .position(x: 50, y: 50)
                     
@@ -32,7 +32,7 @@ struct Shelf: View {
                         .frame(minWidth: 200, idealWidth: 300, maxWidth: 300, minHeight: 10, idealHeight: 20, maxHeight: .infinity, alignment: .topLeading)
                     
                     Image("plant")
-                        .position(x: 320, y: 600)
+                        .position(x: 320, y: 580)
                     
                 }
                 
