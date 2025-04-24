@@ -46,7 +46,16 @@ struct Cartridge: View {
     @State var width: CGFloat = 100
     @State var height: CGFloat = 50
     
-    init(idCartridge: Cartridges, width: CGFloat = 100, height: CGFloat = 50, screenSize: CGSize, originX: CGFloat, originY: CGFloat, xDestination: CGFloat, yDestination: CGFloat) {
+    init(
+        idCartridge: Cartridges,
+        width: CGFloat = 100,
+        height: CGFloat = 50,
+        screenSize: CGSize,
+        originX: CGFloat,
+        originY: CGFloat,
+        xDestination: CGFloat,
+        yDestination: CGFloat
+    ) {
         self.width = width
         self.height = height
         self.screenSize = screenSize
@@ -94,7 +103,7 @@ struct Cartridge: View {
                 }
                 
                 if isCollided {
-                    
+                    // Adicionar NavigationLink para uma tela TreasureView
                 }
             }
     }
@@ -118,6 +127,9 @@ struct Cartridge: View {
             offset.width = xDestination - originX
             offset.height = yDestination - originY
             
+            //Adicionar closure para adição da Cartridge em questão
+            //ao Array cartridgesPlaced
+            
             isCollided = true
         } else {
             isCollided = false
@@ -126,5 +138,13 @@ struct Cartridge: View {
 }
 
 #Preview {
-    Cartridge(idCartridge: .ttt, screenSize: CGSize(width: 393, height: 759), originX: 0, originY: 0, xDestination: 100, yDestination: 200).position(x: 0, y: 0)
+    Cartridge(
+        idCartridge: .ttt,
+        screenSize: CGSize(width: 393, height: 759),
+        originX: 0,
+        originY: 0,
+        xDestination: 100,
+        yDestination: 200
+    )
+    .position(x: 0, y: 0)
 }

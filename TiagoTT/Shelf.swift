@@ -12,7 +12,7 @@ struct Shelf: View {
     //Variável que somente ficará disponível após o jogador ter colocado pelo menos uma
     //fita no lugar
     @State private var showEndingLink = false
-    @State private var cartridgesPlaced = 0
+    @State private var cartridgesPlaced = [Cartridges]()
     
     @State private var scaledButton: Bool = false
     @State private var scaledText: Bool = false
@@ -62,8 +62,15 @@ struct Shelf: View {
                     ForEach(0..<Shelf.cartridges.count - 1, id: \.self) { i in
                         let x = limitedX()
                         let y = limitedY()
-                        Cartridge(idCartridge: Shelf.cartridges[i], screenSize: g.size, originX: x, originY: y, xDestination: destinations[i].width, yDestination: destinations[i].height)
-                            .position(x: x, y: y)
+                        Cartridge(
+                            idCartridge: Shelf.cartridges[i],
+                            screenSize: g.size,
+                            originX: x,
+                            originY: y,
+                            xDestination: destinations[i].width,
+                            yDestination: destinations[i].height
+                        )
+                        .position(x: x, y: y)
                     }
                     
                     // Condicional para mostrar o NavigationLink

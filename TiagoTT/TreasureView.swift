@@ -10,7 +10,12 @@ import SwiftUI
 struct TreasureView: View {
     var body: some View {
         NavigationView {
-            Text("TreasureView")
+            ZStack {
+                Image("background")
+                    .resizable()
+                    .edgesIgnoringSafeArea(.all)
+                Text("TreasureView")
+            }
         }
     }
 }
