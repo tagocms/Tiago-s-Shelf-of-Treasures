@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-enum Cartridges: String, CaseIterable  {
+enum CartridgeType: String, CaseIterable  {
     case planescape
     case skyrim
     case dragonAge
@@ -25,7 +25,9 @@ struct Cartridge: View {
     private let screenSize: CGSize
     private let originX: CGFloat
     private let originY: CGFloat
-    private let idCartridge: Cartridges
+    private let idCartridge: CartridgeType
+    
+    var closure: ((CartridgeType) -> Void)?
     
     //Posição da area de colisão da tela
     let xDestination: CGFloat
@@ -36,7 +38,13 @@ struct Cartridge: View {
     let colissionAreaHeight: CGFloat = 50
     
     //Flag de colisão
-    @State var isCollided = false
+    @State var isCollided = false {
+        didSet {
+            if isCollided {
+                closure?(idCartridge)
+            }
+        }
+    }
     
     
     //Variáveis de Drag
@@ -47,14 +55,15 @@ struct Cartridge: View {
     @State var height: CGFloat = 50
     
     init(
-        idCartridge: Cartridges,
+        idCartridge: CartridgeType,
         width: CGFloat = 100,
         height: CGFloat = 50,
         screenSize: CGSize,
         originX: CGFloat,
         originY: CGFloat,
         xDestination: CGFloat,
-        yDestination: CGFloat
+        yDestination: CGFloat,
+        closure: ((CartridgeType) -> Void)? = nil
     ) {
         self.width = width
         self.height = height
@@ -65,15 +74,28 @@ struct Cartridge: View {
         self.yDestination = yDestination
         self.idCartridge = idCartridge
         self.imageName = self.idCartridge.rawValue
+        self.closure = closure
     }
     
     var body: some View {
-        Image(imageName)
-            .resizable()
-            .frame(width: isDragging ? width + 10 : width, height: isDragging ? height + 5 : height)
+        if isCollided {
+            NavigationLink {
+                TreasureView(idCartridge: idCartridge)
+            } label: {
+                Image(imageName)
+                    .resizable()
+                    .animation(.spring())
+                    .frame(width: isDragging ? width + 10 : width, height: isDragging ? height + 5 : height)
+            }
             .offset(offset)
-            .animation(.spring())
-            .gesture(DragGesture()
+
+        } else {
+            Image(imageName)
+                .resizable()
+                .frame(width: isDragging ? width + 10 : width, height: isDragging ? height + 5 : height)
+                .offset(offset)
+                .animation(.spring())
+                .gesture(DragGesture()
                 .onChanged { value in
                     if !isCollided {
                         let newOffset = CGSize(width: value.translation.width + accumulated.width, height: value.translation.height + accumulated.height)
@@ -101,11 +123,10 @@ struct Cartridge: View {
                     width -= 10
                     height -= 5
                 }
-                
-                if isCollided {
-                    // Adicionar NavigationLink para uma tela TreasureView
-                }
             }
+        }
+
+        
     }
     private func limitX(_ x: CGFloat) -> CGFloat {
         let screenWidth = screenSize.width

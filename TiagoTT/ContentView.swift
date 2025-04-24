@@ -24,7 +24,7 @@ struct ContentView: View {
                     NavigationLink {
                         Shelf()
                     } label: {
-                        Image("TTT")
+                        Image("ttt")
                             .resizable()
                             .scaledToFit()
                             .foregroundStyle(.tint)

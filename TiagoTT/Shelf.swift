@@ -12,16 +12,16 @@ struct Shelf: View {
     //Variável que somente ficará disponível após o jogador ter colocado pelo menos uma
     //fita no lugar
     @State private var showEndingLink = false
-    @State private var cartridgesPlaced = [Cartridges]()
+    @State private var cartridgesPlaced = [CartridgeType]()
     
     @State private var scaledButton: Bool = false
     @State private var scaledText: Bool = false
     
-    private(set) static var cartridges = Cartridges.allCases
+    private(set) static var cartridges = CartridgeType.allCases
     private let destinations: [(width: CGFloat, height: CGFloat)] = [
-        (80, 220),
-        (195, 220),
-        (310, 220),
+        (80, 218),
+        (195, 218),
+        (310, 218),
         (80, 300),
         (195, 300),
         (310, 300),
@@ -30,6 +30,19 @@ struct Shelf: View {
         (310, 385),
         (80, 465),
     ]
+    
+    private var x: [CGFloat] = [CGFloat]()
+    private var y: [CGFloat] = [CGFloat]()
+    
+    init() {
+        for _ in 0..<Self.cartridges.count - 1 {
+            x.append(Self.limitedX())
+        }
+        
+        for _ in 0..<Self.cartridges.count - 1 {
+            y.append(Self.limitedY())
+        }
+    }
 
     var body: some View {
         GeometryReader { g in
@@ -60,17 +73,23 @@ struct Shelf: View {
                     
                     
                     ForEach(0..<Shelf.cartridges.count - 1, id: \.self) { i in
-                        let x = limitedX()
-                        let y = limitedY()
+                        
                         Cartridge(
                             idCartridge: Shelf.cartridges[i],
                             screenSize: g.size,
-                            originX: x,
-                            originY: y,
+                            originX: x[i],
+                            originY: y[i],
                             xDestination: destinations[i].width,
-                            yDestination: destinations[i].height
+                            yDestination: destinations[i].height,
+                            //Tentar fazer essa closure funcionar, deve estar zoada
+                            closure: { id in
+                                self.cartridgesPlaced.append(id)
+                                if self.cartridgesPlaced.count >= 1 {
+                                    showEndingLink = true
+                                }
+                            }
                         )
-                        .position(x: x, y: y)
+                        .position(x: x[i], y: y[i])
                     }
                     
                     // Condicional para mostrar o NavigationLink
@@ -115,13 +134,13 @@ struct Shelf: View {
         
     }
     
-    private func limitedX() -> CGFloat {
+    static func limitedX() -> CGFloat {
             let minX: CGFloat = 50 // mínimo limite
             let maxX: CGFloat = UIScreen.main.bounds.width - 150 // máximo limite
             return CGFloat.random(in: minX...maxX)
         }
         
-    private func limitedY() -> CGFloat {
+    static func limitedY() -> CGFloat {
         let minY: CGFloat = 600 // limite superior
         let maxY: CGFloat = UIScreen.main.bounds.height - 150 // limite inferior
         return CGFloat.random(in: minY...maxY)
