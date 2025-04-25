@@ -17,14 +17,11 @@ struct ContentView: View {
                     .resizable()
                     .edgesIgnoringSafeArea(.all)
                 VStack {
-                    Image("tiago")
-                        .imageScale(.large)
-                        .foregroundStyle(.tint)
                     
                     NavigationLink {
                         Shelf()
                     } label: {
-                        Image("ttt")
+                        Image("shelfoftreasures")
                             .resizable()
                             .scaledToFit()
                             .foregroundStyle(.tint)
@@ -35,8 +32,9 @@ struct ContentView: View {
                             }
                             .frame(width: 300, height: 100)
                     }
-                    .accessibilityHint(Text("Go to the next screen."))
-                    
+                    .simultaneousGesture(TapGesture().onEnded {
+                        SoundManager.instance.playSound(name: "cartridge", volume: 0.2)
+                    })
                 }
                 .padding()
             }

@@ -42,6 +42,7 @@ struct Cartridge: View {
         didSet {
             if isCollided {
                 closure?(idCartridge)
+                SoundManager.instance.playSound(name: "door-lock-2", volume: 1)
             }
         }
     }
@@ -88,6 +89,9 @@ struct Cartridge: View {
                     .frame(width: isDragging ? width + 10 : width, height: isDragging ? height + 5 : height)
             }
             .offset(offset)
+            .simultaneousGesture(TapGesture().onEnded {
+                SoundManager.instance.playSound(name: "cartridge", volume: 0.2)
+            })
 
         } else {
             Image(imageName)
