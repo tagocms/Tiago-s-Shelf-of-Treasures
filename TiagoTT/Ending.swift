@@ -52,7 +52,7 @@ struct Ending: View {
                     .scaledToFit()
                     .opacity(cartridgesPlaced.count >= 10 ? 1 : 0)
                     .scaleEffect(0.2)
-                    .position(x: 197, y: 160)
+                    .position(x: 197, y: 178)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
