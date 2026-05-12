@@ -47,14 +47,12 @@ struct Ending: View {
                 }
                 .padding()
                 
-                VStack {
-                    Image("item-cyberpunk")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .opacity(cartridgesPlaced.count >= 10 ? 1 : 0)
-                        .scaleEffect(0.2)
-                        .position(x: 197, y: 178)
-                }
+                Image("item-cyberpunk")
+                    .resizable()
+                    .scaledToFit()
+                    .opacity(cartridgesPlaced.count >= 10 ? 1 : 0)
+                    .scaleEffect(0.2)
+                    .position(x: 197, y: 160)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
